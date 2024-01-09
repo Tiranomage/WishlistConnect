@@ -1,6 +1,7 @@
 package com.example.wishlistconnect
 
 import android.content.Intent
+import android.content.ContentValues
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -32,22 +33,33 @@ class RegActivity : AppCompatActivity() {
             if(email == "" || pass == "" || name == "")
                 Toast.makeText(this, "Не все поля заполнены", Toast.LENGTH_LONG).show()
             else {
-                val db = DBHelper(this, null)
-                val isMailed = db.getMail(email)
+                val dbHelper = DatabaseHelper(this)
+                val userExists = dbHelper.verifyUserByEmail(email)
 
-                if(isMailed) {
-                    Toast.makeText(this, "Данный пользователь зарегестрирован", Toast.LENGTH_LONG).show()
+                if (userExists) {
+                    Toast.makeText(this, "User already registered", Toast.LENGTH_SHORT).show()
                 } else {
-                    val user = User(email, pass, name)
-                    db.addUser(user)
-                    Toast.makeText(this, "Регистрация успешна", Toast.LENGTH_LONG).show()
+                    // Generate a unique ID (assuming the ID is auto-incremented in the database)
+                    // Alternatively, you can use a UUID or any other unique ID generation method
+                    val uniqueId = dbHelper.addUser(User(0, name, email, pass))
 
-                    userEmail.text.clear()
-                    userPass.text.clear()
-                    userName.text.clear()
+                    if (uniqueId != -1L) {
+                        Toast.makeText(this, "User registered with ID: $uniqueId", Toast.LENGTH_SHORT).show()
 
-                    /*val intent = Intent(this, MenuActivity::class.java)
-                    startActivity(intent)*/
+                        userEmail.text.clear()
+                        userPass.text.clear()
+                        userName.text.clear()
+
+                        val userManager = UserManager(this)
+
+                        // After successful login
+                        userManager.loginUser(uniqueId)
+
+                        val intent = Intent(this, MenuActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this, "Error registering user", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

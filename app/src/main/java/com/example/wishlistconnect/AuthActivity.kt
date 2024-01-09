@@ -31,13 +31,13 @@ class AuthActivity : AppCompatActivity() {
                 Toast.makeText(this, "Не все поля заполнены", Toast.LENGTH_LONG).show()
             else {
 
-                val db = DBHelper(this, null)
-                val isAuth = db.getUser(email, pass)
-                if(isAuth){
+                val db = DatabaseHelper(this)
+                val isAuth = db.getUserByEmailAndPassword(email, pass)
+                if(isAuth != null){
                     Toast.makeText(this, "Авторизация успешна", Toast.LENGTH_LONG).show()
 
-                    /*val intent = Intent(this, MenuActivity::class.java)
-                    startActivity(intent)*/
+                    val intent = Intent(this, MenuActivity::class.java)
+                    startActivity(intent)
 
                     userEmail.text.clear()
                     userPass.text.clear()

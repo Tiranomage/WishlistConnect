@@ -1,4 +1,4 @@
 package com.example.wishlistconnect
 
-class User(val email: String, val pass: String, val name: String) {
+class User(val id: Long, val name: String, val email: String, val password: String) {
 }
